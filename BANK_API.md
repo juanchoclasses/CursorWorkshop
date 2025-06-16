@@ -4,7 +4,39 @@ This document provides comprehensive API documentation for the Bank Backend syst
 
 ## Base URL
 ```
-http://localhost:5000
+http://localhost:8080
+```
+
+## Team-Based Banking System
+This API supports multi-team usage for classroom exercises. Each team can manage their own set of accounts and transactions by providing a `teamId` parameter.
+
+### Team Isolation Features:
+- **Account Separation**: Each account belongs to a specific team
+- **Data Filtering**: Teams can only view/modify their own accounts and transactions  
+- **Transfer Restrictions**: Money transfers can only occur between accounts of the same team
+- **Transaction History**: All transaction queries are automatically filtered by team
+
+### Using Team IDs:
+- Include `teamId` as a query parameter: `?teamId=team-alpha`
+- Or include `teamId` in the request body for POST/PUT operations
+- Team IDs are case-sensitive strings (e.g., "team-alpha", "team-beta", "frontend-team-1")
+
+### Example Team Usage:
+```http
+# Team Alpha creates an account
+POST /api/accounts
+{"teamId": "team-alpha", "accountHolder": "Alice", "initialBalance": 1000}
+
+# Team Beta creates an account  
+POST /api/accounts
+{"teamId": "team-beta", "accountHolder": "Bob", "initialBalance": 500}
+
+# Team Alpha views only their accounts
+GET /api/accounts?teamId=team-alpha
+
+# Team Alpha transfers between their own accounts
+POST /api/transfer
+{"teamId": "team-alpha", "fromAccountId": 1, "toAccountId": 3, "amount": 100}
 ```
 
 ## Authentication
@@ -42,11 +74,16 @@ GET /
 
 **GET** `/api/accounts`
 
-Retrieve a list of all bank accounts in the system.
+Retrieve a list of all bank accounts in the system, optionally filtered by team.
 
-### Request
+### Request (All accounts)
 ```http
 GET /api/accounts
+```
+
+### Request (Team-specific)
+```http
+GET /api/accounts?teamId=team-alpha
 ```
 
 ### Response
@@ -54,17 +91,23 @@ GET /api/accounts
 [
   {
     "id": 1,
+    "teamId": "team-alpha",
     "accountNumber": "1234567890",
     "accountHolder": "John Doe",
     "balance": 1500.00,
-    "accountType": "checking"
+    "accountType": "checking",
+    "status": "active",
+    "createdAt": "2025-06-15T10:30:45.123Z"
   },
   {
     "id": 2,
+    "teamId": "team-alpha", 
     "accountNumber": "0987654321",
     "accountHolder": "Jane Smith",
     "balance": 2750.50,
-    "accountType": "savings"
+    "accountType": "savings",
+    "status": "active",
+    "createdAt": "2025-06-14T14:22:10.456Z"
   }
 ]
 ```
@@ -106,7 +149,7 @@ GET /api/accounts/1
 
 **POST** `/api/accounts`
 
-Create a new bank account.
+Create a new bank account. **Team ID is required.**
 
 ### Request
 ```http
@@ -114,6 +157,7 @@ POST /api/accounts
 Content-Type: application/json
 
 {
+  "teamId": "team-alpha",
   "accountHolder": "Alice Johnson",
   "initialBalance": 1000,
   "accountType": "savings"
@@ -124,14 +168,22 @@ Content-Type: application/json
 ```json
 {
   "id": 3,
+  "teamId": "team-alpha",
   "accountNumber": "5647382910",
   "accountHolder": "Alice Johnson",
   "balance": 1000,
-  "accountType": "savings"
+  "accountType": "savings",
+  "status": "active",
+  "createdAt": "2025-06-15T10:30:45.123Z"
 }
 ```
 
-### Error Response (400)
+### Error Responses (400)
+```json
+{
+  "error": "Team ID is required"
+}
+```
 ```json
 {
   "error": "Account holder name is required"
