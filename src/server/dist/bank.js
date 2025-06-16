@@ -79,22 +79,23 @@ class BankService {
         if (!request.accountHolder || request.accountHolder.trim() === '') {
             throw new Error('Account holder name is required');
         }
+        const initialBalance = request.initialBalance || 0;
         const newAccount = {
             id: this.nextAccountId++,
             teamId: request.teamId.trim(),
             accountNumber: this.generateAccountNumber(),
             accountHolder: request.accountHolder.trim(),
-            balance: request.initialBalance || 0,
+            balance: 0, // Start with 0, let createTransaction handle the balance
             accountType: request.accountType || 'checking',
             status: 'active',
             createdAt: new Date().toISOString()
         };
         this.accounts.push(newAccount);
         // Create initial deposit transaction if there's an initial balance
-        if (newAccount.balance > 0) {
+        if (initialBalance > 0) {
             this.createTransaction(newAccount.id, {
                 type: 'deposit',
-                amount: newAccount.balance,
+                amount: initialBalance,
                 description: 'Initial deposit'
             }, newAccount.teamId);
         }
