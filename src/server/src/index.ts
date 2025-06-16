@@ -70,9 +70,9 @@ app.get('/api/accounts/:id', (req: Request, res: Response) => {
     if (!account) {
       return res.status(404).json({ error: 'Account not found' });
     }
-    res.json(account);
+    return res.json(account);
   } catch (error) {
-    res.status(500).json({ error: (error as Error).message });
+    return res.status(500).json({ error: (error as Error).message });
   }
 });
 
@@ -94,9 +94,9 @@ app.put('/api/accounts/:id', (req: Request, res: Response) => {
       return res.status(400).json({ error: 'Team ID is required' });
     }
     const updatedAccount = bankService.updateAccount(parseInt(req.params.id), req.body, teamId);
-    res.json(updatedAccount);
+    return res.json(updatedAccount);
   } catch (error) {
-    res.status(400).json({ error: (error as Error).message });
+    return res.status(400).json({ error: (error as Error).message });
   }
 });
 
@@ -108,13 +108,13 @@ app.get('/api/accounts/:id/balance', (req: Request, res: Response) => {
     if (!account) {
       return res.status(404).json({ error: 'Account not found' });
     }
-    res.json({ 
+    return res.json({ 
       accountId: account.id,
       accountNumber: account.accountNumber,
       balance: account.balance 
     });
   } catch (error) {
-    res.status(500).json({ error: (error as Error).message });
+    return res.status(500).json({ error: (error as Error).message });
   }
 });
 
@@ -169,9 +169,9 @@ app.get('/api/transactions/:id', (req: Request, res: Response) => {
     if (!transaction) {
       return res.status(404).json({ error: 'Transaction not found' });
     }
-    res.json(transaction);
+    return res.json(transaction);
   } catch (error) {
-    res.status(500).json({ error: (error as Error).message });
+    return res.status(500).json({ error: (error as Error).message });
   }
 });
 
@@ -187,9 +187,9 @@ app.put('/api/accounts/:id/freeze', (req: Request, res: Response) => {
       return res.status(400).json({ error: 'Team ID is required' });
     }
     const account = bankService.freezeAccount(parseInt(req.params.id), reason, teamId);
-    res.json(account);
+    return res.json(account);
   } catch (error) {
-    res.status(400).json({ error: (error as Error).message });
+    return res.status(400).json({ error: (error as Error).message });
   }
 });
 
@@ -201,9 +201,9 @@ app.put('/api/accounts/:id/unfreeze', (req: Request, res: Response) => {
       return res.status(400).json({ error: 'Team ID is required' });
     }
     const account = bankService.unfreezeAccount(parseInt(req.params.id), teamId);
-    res.json(account);
+    return res.json(account);
   } catch (error) {
-    res.status(400).json({ error: (error as Error).message });
+    return res.status(400).json({ error: (error as Error).message });
   }
 });
 
@@ -220,9 +220,9 @@ app.get('/api/accounts/:id/statement', (req: Request, res: Response) => {
       endDate as string,
       teamId as string
     );
-    res.json(statement);
+    return res.json(statement);
   } catch (error) {
-    res.status(400).json({ error: (error as Error).message });
+    return res.status(400).json({ error: (error as Error).message });
   }
 });
 
@@ -245,7 +245,7 @@ app.delete('/api/accounts/:id', (req: Request, res: Response) => {
       return res.status(400).json({ error: 'Team ID is required' });
     }
     const account = bankService.closeAccount(parseInt(req.params.id), teamId);
-    res.json({
+    return res.json({
       message: 'Account closed successfully',
       closedAccount: {
         id: account.id,
@@ -256,7 +256,7 @@ app.delete('/api/accounts/:id', (req: Request, res: Response) => {
       }
     });
   } catch (error) {
-    res.status(400).json({ error: (error as Error).message });
+    return res.status(400).json({ error: (error as Error).message });
   }
 });
 
