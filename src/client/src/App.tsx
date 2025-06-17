@@ -46,7 +46,10 @@ import {
   AccountBalanceWallet,
   TrendingUp,
   Block,
-  LockOpen
+  LockOpen,
+  Settings,
+  Computer,
+  Cloud
 } from '@mui/icons-material';
 
 const theme = createTheme({
@@ -106,7 +109,15 @@ function TabPanel(props: TabPanelProps) {
   );
 }
 
-const API_BASE = import.meta.env.VITE_API_URL || 'https://cursorworkshopserver.onrender.com';
+const SERVER_OPTIONS = {
+  localhost: 'http://localhost:8080',
+  render: 'https://cursorworkshopserver.onrender.com'
+};
+
+const getStoredServer = (): 'localhost' | 'render' => {
+  const stored = localStorage.getItem('selectedServer');
+  return (stored === 'localhost' || stored === 'render') ? stored : 'render';
+};
 
 function App() {
   const [teamId, setTeamId] = useState('demo-team');
@@ -117,6 +128,21 @@ function App() {
   const [success, setSuccess] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState(0);
   const [openDialog, setOpenDialog] = useState('');
+  const [selectedServer, setSelectedServer] = useState<'localhost' | 'render'>(getStoredServer());
+
+  const API_BASE = SERVER_OPTIONS[selectedServer];
+
+  // Server change handler
+  const handleServerChange = (server: 'localhost' | 'render') => {
+    setSelectedServer(server);
+    localStorage.setItem('selectedServer', server);
+    setSuccess(`Switched to ${server === 'localhost' ? 'Local Development' : 'Render Production'} server`);
+    // Refresh data from new server
+    setTimeout(() => {
+      fetchAccounts();
+      fetchTransactions();
+    }, 500);
+  };
 
   // Form states
   const [newAccount, setNewAccount] = useState({
@@ -430,6 +456,7 @@ function App() {
             <Tab icon={<AccountBalanceWallet />} label="Accounts" />
             <Tab icon={<History />} label="Transactions" />
             <Tab icon={<SwapHoriz />} label="Operations" />
+            <Tab icon={<Settings />} label="Settings" />
           </Tabs>
         </Box>
 
@@ -601,6 +628,71 @@ function App() {
               </Paper>
             </Grid>
           </Grid>
+        </TabPanel>
+
+        <TabPanel value={activeTab} index={3}>
+          <Typography variant="h5" gutterBottom>Server Settings</Typography>
+          <Paper sx={{ p: 4, maxWidth: 600 }}>
+            <Typography variant="h6" gutterBottom>
+              <Settings sx={{ mr: 1, verticalAlign: 'middle' }} />
+              API Server Configuration
+            </Typography>
+            <Typography variant="body2" color="text.secondary" paragraph>
+              Choose which server to connect to for API requests. Students can use this to test their local backend development against the deployed frontend.
+            </Typography>
+            
+            <Box sx={{ mt: 3 }}>
+              <Typography variant="subtitle1" gutterBottom>
+                Current Server: <strong>{selectedServer === 'localhost' ? 'Local Development' : 'Render Production'}</strong>
+              </Typography>
+              <Typography variant="body2" color="text.secondary" gutterBottom>
+                API Endpoint: <code>{API_BASE}</code>
+              </Typography>
+            </Box>
+
+            <Box sx={{ mt: 4, display: 'flex', flexDirection: 'column', gap: 2 }}>
+              <Button
+                variant={selectedServer === 'localhost' ? 'contained' : 'outlined'}
+                size="large"
+                startIcon={<Computer />}
+                onClick={() => handleServerChange('localhost')}
+                sx={{ justifyContent: 'flex-start', p: 2 }}
+              >
+                <Box sx={{ textAlign: 'left' }}>
+                  <Typography variant="button" display="block">
+                    Local Development Server
+                  </Typography>
+                  <Typography variant="caption" color="text.secondary">
+                    http://localhost:8080 - For backend development
+                  </Typography>
+                </Box>
+              </Button>
+
+              <Button
+                variant={selectedServer === 'render' ? 'contained' : 'outlined'}
+                size="large"
+                startIcon={<Cloud />}
+                onClick={() => handleServerChange('render')}
+                sx={{ justifyContent: 'flex-start', p: 2 }}
+              >
+                <Box sx={{ textAlign: 'left' }}>
+                  <Typography variant="button" display="block">
+                    Render Production Server
+                  </Typography>
+                  <Typography variant="caption" color="text.secondary">
+                    https://cursorworkshopserver.onrender.com - Deployed backend
+                  </Typography>
+                </Box>
+              </Button>
+            </Box>
+
+            <Box sx={{ mt: 4, p: 2, bgcolor: 'info.light', borderRadius: 1 }}>
+              <Typography variant="body2" color="info.contrastText">
+                <strong>For Students:</strong> Set this to "Local Development Server" to test your local backend code. 
+                Make sure your server is running on port 8080.
+              </Typography>
+            </Box>
+          </Paper>
         </TabPanel>
       </Container>
 
