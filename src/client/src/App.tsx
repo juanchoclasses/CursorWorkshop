@@ -129,6 +129,7 @@ function App() {
   const [activeTab, setActiveTab] = useState(0);
   const [openDialog, setOpenDialog] = useState('');
   const [selectedServer, setSelectedServer] = useState<'localhost' | 'render'>(getStoredServer());
+  const [serverChangeCount, setServerChangeCount] = useState(0);
 
   const API_BASE = SERVER_OPTIONS[selectedServer];
 
@@ -137,6 +138,15 @@ function App() {
     setSelectedServer(server);
     localStorage.setItem('selectedServer', server);
     setSuccess(`Switched to ${server === 'localhost' ? 'Local Development' : 'Render Production'} server`);
+    
+    // Force a refresh by incrementing the counter
+    setServerChangeCount(prev => prev + 1);
+    
+    // Clear existing data immediately
+    setAccounts([]);
+    setTransactions([]);
+    setError(null);
+    
     // Refresh data from new server
     setTimeout(() => {
       fetchAccounts();
@@ -395,6 +405,14 @@ function App() {
   const formatCurrency = (amount: number) => `$${amount.toFixed(2)}`;
   const formatDate = (dateString: string) => new Date(dateString).toLocaleString();
 
+  // Auto-refresh data when server changes or when switching to relevant tabs
+  useEffect(() => {
+    if (activeTab === 0 || activeTab === 1 || activeTab === 2) { // Accounts, Transactions, or Operations tabs
+      fetchAccounts();
+      fetchTransactions();
+    }
+  }, [serverChangeCount, activeTab]); // Trigger when server changes or tab changes
+
   const getStatusColor = (status: string): "default" | "primary" | "secondary" | "error" | "info" | "success" | "warning" => {
     switch (status) {
       case 'active': return 'success';
@@ -452,7 +470,17 @@ function App() {
         )}
 
         <Box sx={{ borderBottom: 1, borderColor: 'divider', mb: 3 }}>
-          <Tabs value={activeTab} onChange={(_, newValue) => setActiveTab(newValue)}>
+          <Tabs 
+            value={activeTab} 
+            onChange={(_, newValue) => {
+              setActiveTab(newValue);
+              // Immediately refresh data when switching to data tabs
+              if (newValue === 0 || newValue === 1 || newValue === 2) {
+                fetchAccounts();
+                fetchTransactions();
+              }
+            }}
+          >
             <Tab icon={<AccountBalanceWallet />} label="Accounts" />
             <Tab icon={<History />} label="Transactions" />
             <Tab icon={<SwapHoriz />} label="Operations" />
