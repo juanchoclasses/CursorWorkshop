@@ -110,7 +110,7 @@ function TabPanel(props: TabPanelProps) {
 }
 
 const SERVER_OPTIONS = {
-  localhost: 'http://localhost:8080',
+  localhost: 'http://localhost:3001',
   render: 'https://cursorworkshopserver.onrender.com'
 };
 
@@ -132,6 +132,14 @@ function App() {
   const [serverChangeCount, setServerChangeCount] = useState(0);
 
   const API_BASE = SERVER_OPTIONS[selectedServer];
+
+  // Helper function to handle localhost connection errors
+  const handleApiError = (err: unknown, defaultMessage: string): string => {
+    if (selectedServer === 'localhost' && err instanceof TypeError && err.message.includes('fetch')) {
+      return '🚫 No local server running. Go to your project terminal and run: npm run dev';
+    }
+    return err instanceof Error ? err.message : defaultMessage;
+  };
 
   // Server change handler
   const handleServerChange = (server: 'localhost' | 'render') => {
@@ -193,7 +201,7 @@ function App() {
         throw new Error('Failed to fetch accounts');
       }
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to fetch accounts');
+      setError(handleApiError(err, 'Failed to fetch accounts'));
     } finally {
       setLoading(false);
     }
@@ -210,7 +218,7 @@ function App() {
         throw new Error('Failed to fetch transactions');
       }
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to fetch transactions');
+      setError(handleApiError(err, 'Failed to fetch transactions'));
     } finally {
       setLoading(false);
     }
@@ -241,7 +249,7 @@ function App() {
         throw new Error(error.error || 'Failed to create account');
       }
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to create account');
+      setError(handleApiError(err, 'Failed to create account'));
     } finally {
       setLoading(false);
     }
@@ -271,7 +279,7 @@ function App() {
         throw new Error(error.error || 'Failed to create transaction');
       }
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to create transaction');
+      setError(handleApiError(err, 'Failed to create transaction'));
     } finally {
       setLoading(false);
     }
@@ -402,7 +410,12 @@ function App() {
     }
   }, [success]);
 
-  const formatCurrency = (amount: number) => `$${amount.toFixed(2)}`;
+  const formatCurrency = (amount: number | null | undefined) => {
+    if (amount === null || amount === undefined || isNaN(amount)) {
+      return '$0.00';
+    }
+    return `$${amount.toFixed(2)}`;
+  };
   const formatDate = (dateString: string) => new Date(dateString).toLocaleString();
 
   // Auto-refresh data when server changes or when switching to relevant tabs

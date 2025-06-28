@@ -195,3 +195,6 @@ The project is designed to be easily customizable:
 - [Vite Documentation](https://vitejs.dev/)
 
 Happy coding! 🚀 
+
+https://cursorworkshopclient.onrender.com/
+https://cursorworkshopserver.onrender.com/
