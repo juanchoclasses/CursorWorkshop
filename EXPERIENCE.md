@@ -48,6 +48,8 @@ The workshop's final phase was characterized by:
 - High participation rate across all college demographics
 - Strong collaborative spirit, particularly in the final phase
 - Effective use of AI tools to overcome technical barriers quickly
+- Students were particularly impressed with Cursor's Agent mode and auto-run functionality. Many were unaware this capability existed and found it transformative to their development workflow
+- Dramatic change from the traditional "ChatGPT copy-paste flow" that many students had become accustomed to, enabling more seamless and integrated development
 
 ### Technical Outcomes
 - Diverse technology choices while maintaining interoperability
@@ -58,6 +60,7 @@ The workshop's final phase was characterized by:
 - Students experienced the complete development lifecycle in a compressed timeframe
 - Demonstrated proficiency in API integration and full-stack architecture
 - Gained hands-on experience with AI-assisted development workflows
+- Students recognized that tasks which would traditionally require an entire weekend could now be accomplished in just 20 minutes with AI assistance
 
 ## Future Plans
 
@@ -66,6 +69,7 @@ Building on this success, we're planning expanded workshops featuring:
 - **Larger Scale Projects**: More ambitious and complex applications
 - **Public Deployment**: Components contributing to a larger system with public proof-of-concept deployment
 - **Extended Timeline**: Allowing for more sophisticated implementations and deeper learning
+- **Integration & Deployment Focus**: Incorporating requirements around system integration and deployment workflows, areas where one-off prompts still don't fully suffice and human engineering expertise remains essential
 
 ## Applications
 
