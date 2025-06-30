@@ -81,8 +81,6 @@ This document serves as the foundation for:
 
 ---
 
-**Note for Ildar**: Please update this document with any additional observations or corrections based on your perspective of the workshop.
-
 ## Contact
 
 For questions about this workshop or future collaboration opportunities, please reach out to the organizing team. 
